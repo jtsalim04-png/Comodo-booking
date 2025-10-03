@@ -1,0 +1,30 @@
+{# templates/booking/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}New Booking{% endblock %}
+
+{% block body %}
+    <div class="flash-messages">
+        {{ include('flash_messages.html.twig') }}
+    </div>
+
+    <div class="booking-form">
+        <h2 class="hero-title">Update Booking</h2>
+        {{ form_start(form) }}
+            <div class="form-row">
+                {{ form_row(form.eventCategory, {'attr': {'class': 'form-select'}}) }}
+                {{ form_row(form.eventName, {'attr': {'class': 'form-input'}}) }}
+            </div>
+            <div class="form-row">
+                {{ form_row(form.seatType, {'attr': {'class': 'form-select'}}) }}
+                {{ form_row(form.price, {'attr': {'class': 'form-input'}}) }}
+            </div>
+            <div class="form-row">
+                {{ form_row(form.status, {'attr': {'class': 'form-select'}}) }}
+            </div>
+            <div class="form-actions">
+                <button class="btn-form-primary">Save Booking</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: ComodoDB
+      MYSQL_USER: user
+      MYSQL_PASSWORD: Comodo123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - comodobooking
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: user
+      PMA_PORT: 3306
+      PMA_PASSWORD: Comodo123
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - comodobooking
+
+volumes:
+  mysql_data:
+
+networks:
+  comodobooking:
+    driver: bridge

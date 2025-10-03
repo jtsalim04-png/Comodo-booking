@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Booking List{% endblock %}
+
+{% block body %}
+<div class="booking-list">
+    <div class="booking-header">
+        <h1 class="hero-title">Bookings</h1>
+        <a href="{{ path('app_booking_new') }}" class="btn-signup">Create New Booking</a>
+    </div>
+
+    {% if bookings|length > 0 %}
+        <div class="table-container">
+            <table class="booking-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Event Category</th>
+                        <th>Event Name</th>
+                        <th>Seat Type</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.id }}</td>
+                            <td>{{ booking.eventCategory }}</td>
+                            <td>{{ booking.eventName }}</td>
+                            <td>{{ booking.seatType }}</td>
+                            <td>{{ booking.price|number_format(2, '.', ',') }}</td>
+                            <td>
+                                <span class="status-badge 
+                                    {% if booking.status == 'reserved' %}status-pending{% endif %}
+                                    {% if booking.status == 'paid' %}status-confirmed{% endif %}
+                                    {% if booking.status == 'cancelled' %}status-cancelled{% endif %}
+                                    {% if booking.status == 'completed' %}status-completed{% endif %}
+                                ">
+                                    {{ booking.status|capitalize }}
+                                </span>
+                            </td>
+                            <td class=".btn-login">
+                                <a href="{{ path('app_booking_show', {'id': booking.id}) }}" class="btn-view btn-action">Show</a>
+                                <a href="{{ path('app_booking_edit', {'id': booking.id}) }}" class="btn-edit btn-action">Edit</a>
+                                {# optional delete button if needed #}
+                                {# <a href="{{ path('booking_delete', {'id': booking.id}) }}" class="btn-form-danger btn-action">Delete</a> #}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📄</div>
+            <div class="empty-state-title">No bookings found</div>
+            <div class="empty-state-text">Click "Create New Booking" to add your first booking.</div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
