@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Event;
 use App\Entity\Ticket;
 use App\Entity\User;
+use App\Service\Mercure\RealtimePublisher;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TicketPurchaseService
@@ -12,6 +13,7 @@ class TicketPurchaseService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private TicketQrService $ticketQrService,
+        private RealtimePublisher $realtimePublisher,
     ) {
     }
 
@@ -29,6 +31,8 @@ class TicketPurchaseService
 
         $ticket->setQrCodePath($this->ticketQrService->generatePayload($ticket));
         $this->entityManager->flush();
+
+        $this->realtimePublisher->publishTicketPurchased($ticket);
 
         return $ticket;
     }

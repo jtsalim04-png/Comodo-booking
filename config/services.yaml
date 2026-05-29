@@ -4,6 +4,10 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.default_url: '%env(DEFAULT_URI)%'
+    mercure.jwt_secret: '%env(default::MERCURE_JWT_SECRET)%'
+    mercure.url: '%env(default::MERCURE_URL)%'
+    mercure.public_url: '%env(default::MERCURE_PUBLIC_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -23,6 +27,19 @@ services:
     App\Service\GoogleIdTokenVerifier:
         arguments:
             $googleClientId: '%env(GOOGLE_CLIENT_ID)%'
+
+    App\Service\Mercure\MercureTokenFactory:
+        arguments:
+            $mercureJwtSecret: '%mercure.jwt_secret%'
+            $appUrl: '%app.default_url%'
+
+    App\Service\Mercure\RealtimePublisher:
+        arguments:
+            $mercureUrl: '%mercure.url%'
+
+    App\Controller\ApiRealtimeController:
+        arguments:
+            $mercurePublicUrl: '%mercure.public_url%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
