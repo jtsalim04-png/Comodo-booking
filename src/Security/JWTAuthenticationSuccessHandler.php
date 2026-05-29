@@ -3,7 +3,7 @@
 namespace App\Security;
 
 use App\Entity\User;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use App\Service\JwtAuthResponseFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -12,7 +12,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerI
 class JWTAuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     public function __construct(
-        private JWTTokenManagerInterface $jwtManager
+        private JwtAuthResponseFactory $jwtAuthResponseFactory,
     ) {
     }
 
@@ -21,23 +21,6 @@ class JWTAuthenticationSuccessHandler implements AuthenticationSuccessHandlerInt
         /** @var User $user */
         $user = $token->getUser();
 
-        if (!in_array('ROLE_ADMIN', $user->getRoles(), true) && !$user->isVerified()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'Please verify your email address before logging in',
-                'verified' => false,
-            ], 403);
-        }
-
-        $jwt = $this->jwtManager->create($user);
-
-        return new JsonResponse([
-            'token' => $jwt,
-            'user' => [
-                'email' => $user->getEmail(),
-                'roles' => $user->getRoles(),
-                'verified' => $user->isVerified(),
-            ],
-        ]);
+        return $this->jwtAuthResponseFactory->create($user);
     }
 }

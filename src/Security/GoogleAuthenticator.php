@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Service\GoogleAuthService;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
@@ -53,12 +54,15 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
         return new SelfValidatingPassport(
             new UserBadge($email, function () use ($email, $name) {
-                $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+                $user = $this->entityManager->getRepository(User::class)->findOneBy([
+                    'email' => $email,
+                    'authType' => GoogleAuthService::AUTH_TYPE_GOOGLE,
+                ]) ?? $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
 
                 if ($user instanceof User) {
-                    // Existing accounts keep their role (no role re-selection).
-                    // Still mark as verified to allow Google users to proceed.
+                    $user->setAuthType(GoogleAuthService::AUTH_TYPE_GOOGLE);
                     $user->setIsVerified(true);
+                    $user->setVerificationToken(null);
                     return $user;
                 }
 
@@ -73,6 +77,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $user->setLastName($lastName);
                 // New Google sign-ups are organizers only.
                 $user->setRole('ROLE_ORGANIZER');
+                $user->setAuthType(GoogleAuthService::AUTH_TYPE_GOOGLE);
                 $user->setIsVerified(true);
                 $user->setVerificationToken(null);
                 $user->setPassword($this->passwordHasher->hashPassword($user, bin2hex(random_bytes(32))));

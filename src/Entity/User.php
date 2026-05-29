@@ -47,6 +47,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $verificationToken = null;
 
+    #[ORM\Column(length: 20, options: ['default' => 'local'])]
+    private string $authType = 'local';
+
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'organizer')]
     private Collection $events;
 
@@ -174,6 +177,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setVerificationToken(?string $verificationToken): static
     {
         $this->verificationToken = $verificationToken;
+        return $this;
+    }
+
+    public function getAuthType(): string
+    {
+        return $this->authType;
+    }
+
+    public function setAuthType(string $authType): static
+    {
+        $this->authType = $authType;
         return $this;
     }
 

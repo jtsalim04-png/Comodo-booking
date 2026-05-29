@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\EmailVerificationService;
+use App\Service\GoogleAuthService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -64,6 +65,7 @@ class ApiRegistrationController extends AbstractController
         $user->setFirstName($data['firstName'] ?? 'API');
         $user->setLastName($data['lastName'] ?? 'User');
         $user->setRole('ROLE_USER');
+        $user->setAuthType(GoogleAuthService::AUTH_TYPE_LOCAL);
 
         $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
         $user->setPassword($hashedPassword);
